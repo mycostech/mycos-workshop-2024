@@ -18,8 +18,8 @@ node.js v20.xx LTS
 
 # Table of Contents
 - [Up React Project / Debugging](#up-project)
-- What is React
-- [React Component](./docs/ReactProp.md)
+- [What is React](./docs/WhatIsReact.md)
+- [React Component](./docs/ReactComponent.md)
 - [Styles React](./docs/Css.md)
 - [React Prop](./docs/ReactProp.md)
 - [Basic Javascript and Typescript](./docs/BasicTypescript.md)
