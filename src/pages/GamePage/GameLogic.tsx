@@ -94,7 +94,17 @@ const generateDots = (level: number): {dots: string[], resultIdx: number} => {
   const hsl = hexToHSL(baseColor); // Convert base color to HSL
 
   // Adjust lightness only, keeping hue and saturation consistent
-  const lightnessDifference = Math.random() > 0.5 ? 10 : -10; // Randomly make the different color lighter or darker
+  let lightnessDifference
+  if(level < 5){
+    lightnessDifference = Math.random() > 0.5 ? 10 : -10; // Randomly make the different color lighter or darker
+
+  }else if(level < 10){
+    lightnessDifference = Math.random() > 0.5 ? 7 : -7
+  }else if(level < 15){
+    lightnessDifference = Math.random() > 0.5 ? 4 : -4
+  }else{
+    lightnessDifference = Math.random() > 0.5 ? 2 : -2
+  }
   const diffColor = HSLToHex(hsl.h, hsl.s, Math.min(100, hsl.l + lightnessDifference)); // Ensure lightness stays within bounds
 
   const dots = Array(level * 4).fill(baseColor); // Generate an array of base color dots
@@ -109,7 +119,7 @@ const generateDots = (level: number): {dots: string[], resultIdx: number} => {
 
 const Game: React.FC = () => {
   const [level, setLevel] = useState<number>(1);
-  let {dots: dotList, resultIdx} = generateDots(level)
+  const {dots: dotList, resultIdx} = generateDots(level)
 
   const [dots, setDots] = useState<string[]>(dotList);
   const [idx, setIdx] = useState<number>(resultIdx)
@@ -119,7 +129,7 @@ const Game: React.FC = () => {
     console.log('dot, idx: ', dots, idx)
     if (dots[index] === dots[idx]) {
       setLevel(level + 1);
-      let {dots: newDotList, resultIdx: newResultIdx} = generateDots(level + 1)
+      const {dots: newDotList, resultIdx: newResultIdx} = generateDots(level + 1)
       setDots(newDotList);
       setIdx(newResultIdx)
     } else {
@@ -135,7 +145,7 @@ const Game: React.FC = () => {
           <h2>Game Over! You reached level {level}</h2>
           <button onClick={() => {
             setLevel(1);
-            let {dots: newDotList, resultIdx: newResultIdx} = generateDots(1)
+            const {dots: newDotList, resultIdx: newResultIdx} = generateDots(1)
             setDots(newDotList);
             setIdx(newResultIdx)
             setGameOver(false);
