@@ -89,7 +89,7 @@ const getRandomColor = (): string => {
   return color;
 };
 
-const generateDots = (level: number): string[] => {
+const generateDots = (level: number): {dots: string[], resultIdx: number} => {
   const baseColor = getRandomColor(); // Generate a random base color for the level
   const hsl = hexToHSL(baseColor); // Convert base color to HSL
 
@@ -99,20 +99,29 @@ const generateDots = (level: number): string[] => {
 
   const dots = Array(level * 4).fill(baseColor); // Generate an array of base color dots
   const randomIndex = Math.floor(Math.random() * dots.length);
-  dots[randomIndex] = diffColor; // Replace one dot with the different color
+  dots[randomIndex] = diffColor.toUpperCase(); // Replace one dot with the different color
 
-  return dots;
+  return {
+    dots,
+    resultIdx: randomIndex
+  };
 };
 
 const Game: React.FC = () => {
   const [level, setLevel] = useState<number>(1);
-  const [dots, setDots] = useState<string[]>(generateDots(level));
+  let {dots: dotList, resultIdx} = generateDots(level)
+
+  const [dots, setDots] = useState<string[]>(dotList);
+  const [idx, setIdx] = useState<number>(resultIdx)
   const [gameOver, setGameOver] = useState<boolean>(false);
 
   const handleDotClick = (index: number) => {
-    if (dots[index] !== dots[0]) {
+    console.log('dot, idx: ', dots, idx)
+    if (dots[index] === dots[idx]) {
       setLevel(level + 1);
-      setDots(generateDots(level + 1));
+      let {dots: newDotList, resultIdx: newResultIdx} = generateDots(level + 1)
+      setDots(newDotList);
+      setIdx(newResultIdx)
     } else {
       setGameOver(true);
     }
@@ -126,7 +135,9 @@ const Game: React.FC = () => {
           <h2>Game Over! You reached level {level}</h2>
           <button onClick={() => {
             setLevel(1);
-            setDots(generateDots(1));
+            let {dots: newDotList, resultIdx: newResultIdx} = generateDots(1)
+            setDots(newDotList);
+            setIdx(newResultIdx)
             setGameOver(false);
           }}>Restart</button>
         </div>
