@@ -16,10 +16,10 @@ const StartPage = () => {
     return(
         <Box>
             <Grid container>
-                <Grid item xl={12}>
+                <Grid item xl={12} lg={12} md={12} sm={12} xs={12}>
                     <Typography variant="h1">Color Dot Game</Typography>
                 </Grid>
-                <Grid item xl={12}>
+                <Grid item xl={12} lg={12} md={12} sm={12} xs={12}>
                     <TextField
                         required
                         label="Input Name"
@@ -28,7 +28,7 @@ const StartPage = () => {
                         fullWidth
                     />
                 </Grid>
-                <Grid item xl={12} pt={1}>
+                <Grid item xl={12} lg={12} md={12} sm={12} xs={12} pt={1}>
                     <Button variant="contained" onClick={onStartBtnClick}>
                         Start
                     </Button>

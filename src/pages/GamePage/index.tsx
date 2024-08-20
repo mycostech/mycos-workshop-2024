@@ -10,17 +10,17 @@ const GamePage = () => {
 
     useEffect(() => {
         if(!user) navigate('/')
-    }, [user])
+    }, [user, navigate])
 
     return(
         <Box>
             <Grid container>
-                <Grid item xl={12}>
+                <Grid item xl={12} lg={12} md={12} sm={12} xs={12}>
                     <Typography variant="h1">
                         Welcome {user}
                     </Typography>
                 </Grid>
-                <Grid xl={12} lg={12}>
+                <Grid xl={12} lg={12} md={12} sm={12} xs={12}>
                     <Game/>
                 </Grid>
             </Grid>
