@@ -6,7 +6,7 @@ import Game from "./GameLogic"
 
 const GamePage = () => {
     const navigate = useNavigate()
-    const { user } = useMain()
+    const { user, channel } = useMain()
 
     useEffect(() => {
         if(!user) navigate('/')
@@ -18,6 +18,9 @@ const GamePage = () => {
                 <Grid item xl={12} lg={12} md={12} sm={12} xs={12}>
                     <Typography variant="h1">
                         Welcome {user}
+                    </Typography>
+                    <Typography variant="h2">
+                        Channel: {channel}
                     </Typography>
                 </Grid>
                 <Grid xl={12} lg={12} md={12} sm={12} xs={12}>

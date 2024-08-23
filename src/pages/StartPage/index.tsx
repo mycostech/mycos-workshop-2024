@@ -1,29 +1,40 @@
-import { Box, Button, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Typography } from "@mui/material"
-import { useState } from "react"
+import { Box, Button, Grid, TextField, Typography } from "@mui/material"
+import { useEffect, useState } from "react"
 import { useMain } from "../../contexts/MainContext"
 import { useNavigate } from 'react-router-dom'
 import ScoreboardButton from "../../components/ScoreboardButton"
-
-const GAME_GUID = "c551724b-c8ab-4255-a131-3ac90ec9d0e2"
+import { v4 as uuid } from 'uuid'
+import ChannelDropdown from "../../components/ChannelDropdown"
 
 const StartPage = () => {
-    const { setUser, setChannel, joinGame } = useMain()
+    const { setUser, setChannel, joinGame, getAllAppsName, isConnect, appList } = useMain()
     const navigate = useNavigate()
     const [name, setName] = useState<string>("John Doe")
-    const [channelName, setChannelName] = useState<string>(GAME_GUID)
+    const [channelName, setChannelName] = useState<string>("")
+    const [appNameLists, setAppNameLists] = useState<string[]>([])
+
+    useEffect(() => {
+        if(isConnect){
+            getAllAppsName()
+        }
+    }, [getAllAppsName, isConnect])
+
+    useEffect(() => {
+        setAppNameLists([...appList])
+    }, [appList])
 
     const onStartBtnClick = () => {
-        setUser(name)
-        joinGame(GAME_GUID)
-        setChannel(channelName)
-        navigate('/game', {state: {
-
-        }})
+        if(channelName){
+            setUser(name)
+            joinGame(channelName)
+            setChannel(channelName)
+            navigate('/game', {state: {}})
+        }else{
+            alert("Please select channel.")
+        }
     }
 
     const onScoreboardClick = () => {
-        setChannel(GAME_GUID)
-        joinGame(GAME_GUID)
         navigate('/score')
     }
 
@@ -37,16 +48,21 @@ const StartPage = () => {
                     <Typography variant="h2" p={1}>
                         Select Channel
                     </Typography>
-                    <FormControl fullWidth>
-                        <InputLabel>Channel</InputLabel>
-                        <Select
-                            value={channelName}
-                            label="Channel"
-                            onChange={e => setChannelName(e.target.value)}
-                        >
-                            <MenuItem value={GAME_GUID}>{GAME_GUID}</MenuItem>
-                        </Select>
-                    </FormControl>
+                   <ChannelDropdown
+                    appNameLists={appNameLists}
+                    channelName={channelName}
+                    onChange={(val) => setChannelName(val)}
+                   />
+                    <Button
+                        variant="outlined" sx={{ marginTop: 1 }}
+                        onClick={() => {
+                            const newRoomId = uuid()
+                            setAppNameLists(p => [newRoomId, ...p])
+                            setChannelName(newRoomId)
+                        }}
+                    >
+                        Create new room.
+                    </Button>
                 </Grid>
                 <Grid item xl={12} lg={12} md={12} sm={12} xs={12}>
                     <TextField

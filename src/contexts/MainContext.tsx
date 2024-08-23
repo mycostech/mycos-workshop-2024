@@ -9,9 +9,13 @@ interface MainContextType {
   channel: string | null,
   setChannel: (channel: string | null) => void;
   joinGame: (roomId: string) => void
-  getLatestScoreFromServer: () => void
+  getLatestScoreFromServer: (channelId: string) => void
   updateScoreToServer: (score: number) => void
   scoreList: IScoreList,
+  getAllAppsName: () => void
+  connection: signalR.HubConnection | null
+  isConnect: boolean
+  appList: string[]
 }
 
 // Create the context with a default value
@@ -22,7 +26,7 @@ export const MainProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [user, setUser] = useState<string | null>(null);
   const [channel, setChannel] = useState<string | null>(null)
 
-  const { joinGame, updateScore, scoreList, getUpdatedScore } = useSignalR("http://localhost:5163/scoreHub")
+  const { joinGame, updateScore, scoreList, getUpdatedScore, getAllAppsName, connection, isConnect, appList } = useSignalR("http://localhost:5163/scoreHub")
 
   const updateScoreToServer = useCallback((score: number) => {
     if(channel && user){
@@ -30,10 +34,9 @@ export const MainProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, [channel, user, updateScore])
 
-  const getLatestScoreFromServer = () => {
-    console.log('channel: ', channel)
-    if(channel){
-      getUpdatedScore(channel)
+  const getLatestScoreFromServer = (channelId: string) => {
+    if(isConnect){
+      getUpdatedScore(channelId)
     }
   }
 
@@ -47,6 +50,10 @@ export const MainProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       updateScoreToServer,
       scoreList,
       getLatestScoreFromServer,
+      getAllAppsName,
+      connection,
+      isConnect,
+      appList
     }}>
       {children}
     </MainContext.Provider>

@@ -7,6 +7,8 @@ const useSignalR = (hubUrl: string) => {
     const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
     // const [messages, setMessages] = useState<string[]>([]);
     const [scoreList, setScoreList] = useState<IScoreList>({})
+    const [appList, setAppList] = useState<string[]>([])
+    const [isConnect, setIsConnect] = useState<boolean>(false)
 
     useEffect(() => {
         const connect = new signalR.HubConnectionBuilder()
@@ -29,13 +31,20 @@ const useSignalR = (hubUrl: string) => {
                 .start()
                 .then(() => {
                     console.log("Connected to SignalR");
+                    setIsConnect(true)
 
                     connection.on("ReceiveScores", (scores) => {
-                        console.log("Score: ", scores)
                         setScoreList(scores)
                     });
+
+                    connection.on("ReceiveAppNames", (appNames) => {
+                        setAppList(appNames)
+                    })
                 })
-                .catch((err) => console.error("SignalR Connection Error: ", err));
+                .catch((err) => {
+                    console.error("SignalR Connection Error: ", err)
+                    setIsConnect(false)
+                });
         }
     }, [connection]);
 
@@ -64,6 +73,14 @@ const useSignalR = (hubUrl: string) => {
         }
     }, [connection])
 
+    const getAllAppsName = useCallback(() => {
+        if(isConnect){
+            connection?.invoke("GetAllAppNames").then(() => {
+                console.log("Get All App Name Complete")
+            }).catch(err => console.error(err.toString()));
+        }
+    }, [isConnect, connection])
+
 
 
 
@@ -73,7 +90,10 @@ const useSignalR = (hubUrl: string) => {
         joinGame,
         updateScore,
         scoreList,
-        getUpdatedScore
+        getUpdatedScore,
+        getAllAppsName,
+        isConnect,
+        appList
     };
 };
 
