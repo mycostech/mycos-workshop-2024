@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import { useMain } from '../../contexts/MainContext';
+import ScoreboardButton from '../../components/ScoreboardButton';
+import { useNavigate } from 'react-router-dom';
 
 // Convert hex to HSL
 const hexToHSL = (hex: string) => {
@@ -118,6 +121,9 @@ const generateDots = (level: number): {dots: string[], resultIdx: number} => {
 };
 
 const Game: React.FC = () => {
+  const navigate = useNavigate()
+  const { updateScoreToServer } = useMain()
+
   const [level, setLevel] = useState<number>(1);
   const {dots: dotList, resultIdx} = generateDots(level)
 
@@ -134,6 +140,7 @@ const Game: React.FC = () => {
       setIdx(newResultIdx)
     } else {
       setGameOver(true);
+      updateScoreToServer(level)
     }
   };
 
@@ -150,6 +157,13 @@ const Game: React.FC = () => {
             setIdx(newResultIdx)
             setGameOver(false);
           }}>Restart</button>
+          <br/>
+          <br/>
+          <ScoreboardButton
+            onScoreboardClick={() => {
+              navigate('/score')
+            }}
+          />
         </div>
       ) : (
         <>
