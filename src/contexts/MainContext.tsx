@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
 import useSignalR, { IScoreList } from '../hooks/useSignalR';
 
+const wsUrl = import.meta.env.VITE_WS_URL
 // Define the shape of the context value
 interface MainContextType {
   user: string | null;
@@ -26,7 +27,16 @@ export const MainProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [user, setUser] = useState<string | null>(null);
   const [channel, setChannel] = useState<string | null>(null)
 
-  const { joinGame, updateScore, scoreList, getUpdatedScore, getAllAppsName, connection, isConnect, appList } = useSignalR("http://localhost:5163/scoreHub")
+  const {
+    joinGame,
+    updateScore,
+    scoreList,
+    getUpdatedScore,
+    getAllAppsName,
+    connection,
+    isConnect,
+    appList
+  } = useSignalR(wsUrl)
 
   const updateScoreToServer = useCallback((score: number) => {
     if(channel && user){
