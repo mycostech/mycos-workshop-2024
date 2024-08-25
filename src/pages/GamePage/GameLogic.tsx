@@ -1,164 +1,94 @@
-import React, { useState } from 'react';
-import { useMain } from '../../contexts/MainContext';
-import ScoreboardButton from '../../components/ScoreboardButton';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-// Convert hex to HSL
-const hexToHSL = (hex: string) => {
-  const r = parseInt(hex.slice(1, 3), 16) / 255;
-  const g = parseInt(hex.slice(3, 5), 16) / 255;
-  const b = parseInt(hex.slice(5, 7), 16) / 255;
+import { useMain } from '../../contexts/MainContext';
+import ScoreboardButton from '../../components/ScoreboardButton';
+import ColorSpotGame from './core/ColorSpotGame';
+import Timer from '../../components/Timer';
+import useTimer from '../../hooks/useTimer';
+import { Zoom } from '@mui/material';
 
-  const max = Math.max(r, g, b);
-  const min = Math.min(r, g, b);
-  let h: number = 0, s: number = 0
-  const l: number = (max + min) / 2;
-
-  if (max !== min) {
-    const d = max - min;
-    s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
-    switch (max) {
-      case r: h = (g - b) / d + (g < b ? 6 : 0); break;
-      case g: h = (b - r) / d + 2; break;
-      case b: h = (r - g) / d + 4; break;
-    }
-    h /= 6;
-  }
-
-  return { h: h * 360, s: s * 100, l: l * 100 };
-};
-
-const HSLToHex = (h: number, s: number, l: number): string => {
-  // Normalize the input values
-  h = h % 360; // Ensure h is within [0, 360)
-  s = Math.max(0, Math.min(100, s)); // Clamp s between [0, 100]
-  l = Math.max(0, Math.min(100, l)); // Clamp l between [0, 100]
-
-  s /= 100;
-  l /= 100;
-
-  const c = (1 - Math.abs(2 * l - 1)) * s;
-  const x = c * (1 - Math.abs((h / 60) % 2 - 1));
-  const m = l - c / 2;
-
-  let r: number = 0, g: number = 0, b: number = 0;
-
-  if (h >= 0 && h < 60) {
-    r = c;
-    g = x;
-    b = 0;
-  } else if (h >= 60 && h < 120) {
-    r = x;
-    g = c;
-    b = 0;
-  } else if (h >= 120 && h < 180) {
-    r = 0;
-    g = c;
-    b = x;
-  } else if (h >= 180 && h < 240) {
-    r = 0;
-    g = x;
-    b = c;
-  } else if (h >= 240 && h < 300) {
-    r = x;
-    g = 0;
-    b = c;
-  } else if (h >= 300 && h < 360) {
-    r = c;
-    g = 0;
-    b = x;
-  }
-
-  // Adding a fallback mechanism in case the calculations yield unexpected NaN values
-  if (isNaN(r)) r = 0;
-  if (isNaN(g)) g = 0;
-  if (isNaN(b)) b = 0;
-
-  r = Math.round((r + m) * 255);
-  g = Math.round((g + m) * 255);
-  b = Math.round((b + m) * 255);
-
-  const toHex = (value: number) => value.toString(16).padStart(2, '0');
-  return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-};
-
-// Function to generate a random color
-const getRandomColor = (): string => {
-  const letters = '0123456789ABCDEF';
-  let color = '#';
-  for (let i = 0; i < 6; i++) {
-    color += letters[Math.floor(Math.random() * 16)];
-  }
-  return color;
-};
-
-const generateDots = (level: number): {dots: string[], resultIdx: number} => {
-  const baseColor = getRandomColor(); // Generate a random base color for the level
-  const hsl = hexToHSL(baseColor); // Convert base color to HSL
-
-  // Adjust lightness only, keeping hue and saturation consistent
-  let lightnessDifference
-  if(level < 5){
-    lightnessDifference = Math.random() > 0.5 ? 10 : -10; // Randomly make the different color lighter or darker
-
-  }else if(level < 10){
-    lightnessDifference = Math.random() > 0.5 ? 7 : -7
-  }else if(level < 15){
-    lightnessDifference = Math.random() > 0.5 ? 4 : -4
-  }else{
-    lightnessDifference = Math.random() > 0.5 ? 2 : -2
-  }
-  const diffColor = HSLToHex(hsl.h, hsl.s, Math.min(100, hsl.l + lightnessDifference)); // Ensure lightness stays within bounds
-
-  const dots = Array(level * 4).fill(baseColor); // Generate an array of base color dots
-  const randomIndex = Math.floor(Math.random() * dots.length);
-  dots[randomIndex] = diffColor.toUpperCase(); // Replace one dot with the different color
-
-  return {
-    dots,
-    resultIdx: randomIndex
-  };
-};
 
 const Game: React.FC = () => {
   const navigate = useNavigate()
   const { updateScoreToServer } = useMain()
+  const { time, start: startTimer, stop: stopTimer, reset: resetTimer } = useTimer();
 
-  const [level, setLevel] = useState<number>(1);
-  const {dots: dotList, resultIdx} = generateDots(level)
+  const [finalScore, setFinalScore] = useState<number>(0);
+  const [gameFinished, setGameFinished] = useState<boolean>(false);
+  const [level] = useState<number>(10);
+  const [stages] = useState<number>(4);
+  const [game, resetGame] = useState(new ColorSpotGame(level, stages));
 
-  const [dots, setDots] = useState<string[]>(dotList);
-  const [idx, setIdx] = useState<number>(resultIdx)
+  const [dots, setDots] = useState<string[]>([]);
+  const [idx, setIdx] = useState<number>(0);
   const [gameOver, setGameOver] = useState<boolean>(false);
 
-  const handleDotClick = (index: number) => {
-    console.log('dot, idx: ', dots, idx)
-    if (dots[index] === dots[idx]) {
-      setLevel(level + 1);
-      const {dots: newDotList, resultIdx: newResultIdx} = generateDots(level + 1)
+  const currentStage = useMemo(() => {
+    return game.getCurrentStage();
+  }, [game.getCurrentStage()]);
+
+  const currentLevel = useMemo(() => {
+    return game.getCurrentLevel();
+  }, [game.getCurrentLevel()])
+
+  const handleNextStage = useCallback(() => {
+    if (game.nextStage()) {
+      const { dots: newDotList, resultIdx: newResultIdx } = game.getGameNextLevel();
       setDots(newDotList);
       setIdx(newResultIdx)
     } else {
       setGameOver(true);
-      updateScoreToServer(level)
+      // Submit calculated score.
+      const score = game.getScore(Math.floor((time % 60000) / 1000));
+      setFinalScore(score);
+      updateScoreToServer(score);
+      setGameFinished(true);
+      stopTimer();
     }
-  };
+  }, [game, time, setGameOver, updateScoreToServer, setGameFinished, stopTimer]);
+
+  const handleDotClick = useCallback((index: number) => {
+    // console.log('dot, idx: ', dots, idx)
+    if (dots[index] === dots[idx]) {
+      handleNextStage();
+    } else {
+      setGameOver(true);
+      // Submit calculated score.
+      const score = game.getScore(Math.floor((time % 60000) / 1000));
+      setFinalScore(score);
+      updateScoreToServer(score);
+      stopTimer();
+    }
+  }, [handleNextStage, dots, time, , setGameOver, updateScoreToServer, stopTimer]);
+
+  const restartGame = useCallback(() => {
+    const newGame = new ColorSpotGame(level, stages);
+    const { dots: newDotList, resultIdx: newResultIdx } = newGame.getGameNextLevel();
+    setDots(newDotList);
+    setIdx(newResultIdx)
+    resetGame(newGame);
+    setGameOver(false);
+    setGameFinished(false);
+    resetTimer();
+    startTimer();
+  }, [resetGame, setDots, setIdx, setGameOver, setGameFinished, startTimer, resetTimer, level, stages])
+
+  useEffect(() => {
+    restartGame();
+  }, [])
 
   return (
     <div style={{ textAlign: 'center', marginTop: '50px' }}>
-      <h1>Color Spot Game</h1>
-      {gameOver ? (
+      <Timer time={time} />
+      <h1>Color Spot Game Level {currentLevel}</h1>
+      {gameOver || gameFinished ? (
         <div>
-          <h2>Game Over! You reached level {level}</h2>
-          <button onClick={() => {
-            setLevel(1);
-            const {dots: newDotList, resultIdx: newResultIdx} = generateDots(1)
-            setDots(newDotList);
-            setIdx(newResultIdx)
-            setGameOver(false);
-          }}>Restart</button>
-          <br/>
-          <br/>
+          <h2>{gameFinished ? 'Congratulation You have Completed All Levels' : `Game Over! You reached only stage ${currentStage} of level ${currentLevel}`}</h2>
+          <h3>Score : {finalScore}</h3>
+          <button onClick={restartGame}>Restart</button>
+          <br />
+          <br />
           <ScoreboardButton
             onScoreboardClick={() => {
               navigate('/score')
@@ -167,23 +97,27 @@ const Game: React.FC = () => {
         </div>
       ) : (
         <>
-          <h2>Level {level}</h2>
-          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${level}, 50px)`, gap: '10px', justifyContent: 'center' }}>
+          <h2>Stage {currentStage}</h2>
+          <div style={{ display: 'grid', gridTemplateColumns: `repeat(${Math.sqrt(dots.length)}, 50px)`, gap: '10px', justifyContent: 'center' }}>
             {dots.map((color, index) => {
-              console.log("color: ", color)
+              // console.log("color: ", color)
               return (
-              <div
-                key={index}
-                onClick={() => handleDotClick(index)}
-                style={{
-                  width: '50px',
-                  height: '50px',
-                  backgroundColor: color,
-                  borderRadius: '50%',
-                  cursor: 'pointer',
-                }}
-              ></div>
-            )})}
+                <Zoom in={true} key={index}>
+                  <div
+
+                    onClick={() => handleDotClick(index)}
+                    style={{
+                      width: '50px',
+                      height: '50px',
+                      backgroundColor: color,
+                      borderRadius: '50%',
+                      cursor: 'pointer',
+                    }}
+                  ></div>
+                </Zoom>
+
+              )
+            })}
           </div>
         </>
       )}
