@@ -21,7 +21,7 @@ const Game: React.FC = () => {
   const [game, resetGame] = useState(new ColorSpotGame(level, stages));
 
   const [dots, setDots] = useState<string[]>([]);
-  const [idx, setIdx] = useState<number>(0);
+  const [correctDot, setCorrectDot] = useState<number>(0);
   const [gameOver, setGameOver] = useState<boolean>(false);
 
   const currentStage = useMemo(() => {
@@ -36,7 +36,7 @@ const Game: React.FC = () => {
     if (game.nextStage()) {
       const { dots: newDotList, resultIdx: newResultIdx } = game.getGameNextLevel();
       setDots(newDotList);
-      setIdx(newResultIdx)
+      setCorrectDot(newResultIdx)
     } else {
       setGameOver(true);
       // Submit calculated score.
@@ -50,7 +50,7 @@ const Game: React.FC = () => {
 
   const handleDotClick = useCallback((index: number) => {
     // console.log('dot, idx: ', dots, idx)
-    if (dots[index] === dots[idx]) {
+    if (dots[index] === dots[correctDot]) {
       handleNextStage();
     } else {
       setGameOver(true);
@@ -66,13 +66,13 @@ const Game: React.FC = () => {
     const newGame = new ColorSpotGame(level, stages);
     const { dots: newDotList, resultIdx: newResultIdx } = newGame.getGameNextLevel();
     setDots(newDotList);
-    setIdx(newResultIdx)
+    setCorrectDot(newResultIdx)
     resetGame(newGame);
     setGameOver(false);
     setGameFinished(false);
     resetTimer();
     startTimer();
-  }, [resetGame, setDots, setIdx, setGameOver, setGameFinished, startTimer, resetTimer, level, stages])
+  }, [resetGame, setDots, setCorrectDot, setGameOver, setGameFinished, startTimer, resetTimer, level, stages])
 
   useEffect(() => {
     restartGame();
