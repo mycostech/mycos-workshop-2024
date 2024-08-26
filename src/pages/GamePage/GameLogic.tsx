@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Zoom } from '@mui/material';
 
 import { useMain } from '../../contexts/MainContext';
 import ScoreboardButton from '../../components/ScoreboardButton';
 import ColorSpotGame from './core/ColorSpotGame';
 import Timer from '../../components/Timer';
 import useTimer from '../../hooks/useTimer';
-import { Zoom } from '@mui/material';
+import BackgroundMusic from '../../components/BackgroundMusic';
 
 
 const Game: React.FC = () => {
@@ -16,7 +17,7 @@ const Game: React.FC = () => {
 
   const [finalScore, setFinalScore] = useState<number>(0);
   const [gameFinished, setGameFinished] = useState<boolean>(false);
-  const [level] = useState<number>(10);
+  const [level] = useState<number>(2);
   const [stages] = useState<number>(4);
   const [game, resetGame] = useState(new ColorSpotGame(level, stages));
 
@@ -31,6 +32,16 @@ const Game: React.FC = () => {
   const currentLevel = useMemo(() => {
     return game.getCurrentLevel();
   }, [game.getCurrentLevel()])
+
+  const bgSong = useMemo(() => {
+    if (gameFinished) {
+      return 'https://www.youtube.com/watch?v=OCOeCrpRNGA';
+    } else if (gameOver) {
+      return 'https://www.youtube.com/watch?v=Hs7dYjkagxk';
+    }
+    return 'https://www.youtube.com/watch?v=BS5Q6cZMIM8';
+  }, [gameOver, gameFinished])
+
 
   const handleNextStage = useCallback(() => {
     if (game.nextStage()) {
@@ -81,6 +92,7 @@ const Game: React.FC = () => {
   return (
     <div style={{ textAlign: 'center', marginTop: '50px' }}>
       <Timer time={time} />
+      <BackgroundMusic songUrl={bgSong} />
       <h1>Color Spot Game Level {currentLevel}</h1>
       {gameOver || gameFinished ? (
         <div>
