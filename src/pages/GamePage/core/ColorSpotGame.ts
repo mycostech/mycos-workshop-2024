@@ -64,7 +64,7 @@ class ColorSpotGame {
             - (time * TIME_WEIGHT);
 
         // Round the score to the nearest integer and ensure it is not negative
-        return Math.max(Math.round(score), 0);
+        return this.currentLevel === 1 && this.currentStage ===1 ? 0 : Math.max(Math.round(score), 0);
     }
 
     getCurrentLevel() {
