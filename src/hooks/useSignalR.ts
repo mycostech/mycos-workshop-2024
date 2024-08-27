@@ -57,41 +57,11 @@ const useSignalR = (hubUrl: string) => {
         }
     }, [connection])
 
-    const updateScore = useCallback((roomId: string, playerName: string, score: number) => {
-        if(connection){
-            connection.invoke('UpdateScore', roomId, playerName, score).then(() => {
-                console.log("Update Score Complete.")
-            }).catch(err => console.error(err.toString()));
-        }
-    }, [connection])
-
-    const getUpdatedScore = useCallback((roomId: string) => {
-        if(connection){
-            connection?.invoke("GetScores", roomId).then(() => {
-                console.log("Get Updated Score Complete")
-            }).catch(err => console.error(err.toString()));
-        }
-    }, [connection])
-
-    const getAllAppsName = useCallback(() => {
-        if(isConnect){
-            connection?.invoke("GetAllAppNames").then(() => {
-                console.log("Get All App Name Complete")
-            }).catch(err => console.error(err.toString()));
-        }
-    }, [isConnect, connection])
-
-
-
-
     return {
         // messages,
         connection,
         joinGame,
-        updateScore,
         scoreList,
-        getUpdatedScore,
-        getAllAppsName,
         isConnect,
         appList
     };

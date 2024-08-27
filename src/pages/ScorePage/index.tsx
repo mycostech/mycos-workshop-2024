@@ -1,27 +1,45 @@
 import { useEffect, useState } from "react"
-import { useMain } from "../../contexts/MainContext"
 import { Box, Button, Grid, Typography } from "@mui/material"
 import DataTable from "./Table"
 import { useNavigate } from "react-router-dom"
-import ChannelDropdown from "../../components/ChannelDropdown"
+import ChannelDropdown, { FIRST_OPTION_VALUE_DROPDOWN } from "../../components/ChannelDropdown"
+import { getAllListChannel, getScoreByAppName } from "../../api/appScore"
 
+interface IScoreList{[key: string]: number}
 
 export default function ScorePage(){
     const navigate = useNavigate()
-    const { scoreList, getLatestScoreFromServer, appList, channel, isConnect, getAllAppsName } = useMain()
-    const [state, setState] = useState<boolean>(true)
-    const [channelId, setChannelId] = useState<string | null>(channel)
+    // const { channel } = useMain()
+    const [appNameLists, setAppNameLists] = useState<string[]>([])
+    const [channelId, setChannelId] = useState<string | null>(FIRST_OPTION_VALUE_DROPDOWN)
+    const [scoreList, setScoreList] = useState<IScoreList>({})
 
     useEffect(() => {
-        if(isConnect && state){
-            getAllAppsName()
-            setState(false)
+        async function GetAllListChannel() {
+            try {
+                const data = await getAllListChannel()
+                setAppNameLists(() => [...data])
+            } catch (error) {
+                console.error(error)
+                alert("Error")
+            }
         }
-    }, [isConnect, state, getAllAppsName])
 
-    const onSelectChannel = (channelIdSelected: string) => {
+        GetAllListChannel()
+    }, [])
+
+    const onSelectChannel = async(channelIdSelected: string) => {
+        if(channelIdSelected !== FIRST_OPTION_VALUE_DROPDOWN){
         setChannelId(channelIdSelected)
-        getLatestScoreFromServer(channelIdSelected)
+        // getLatestScoreFromServer(channelIdSelected)
+        try {
+            const res = await getScoreByAppName(channelIdSelected)
+            setScoreList(res)
+        } catch (error) {
+            console.error(error)
+            alert(`Can't get score from server.`)
+        }
+       }
     }
 
     return(
@@ -30,11 +48,11 @@ export default function ScorePage(){
                 <Grid item xl={12} lg={12} md={12} sm={12} xs={12}>
                     <Typography variant="h1">
                         Scoreboard
-                    </Typography>
+                    </Typography>   
                 </Grid>
                 <Grid item xl={12} lg={12} md={12} sm={12} xs={12} p={1}>
                     <ChannelDropdown
-                        appNameLists={appList}
+                        appNameLists={appNameLists}
                         channelName={channelId || ""}
                         onChange={(val) => onSelectChannel(val)}
                     />
