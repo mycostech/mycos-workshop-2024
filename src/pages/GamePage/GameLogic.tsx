@@ -9,17 +9,23 @@ import Timer from '../../components/Timer';
 import useTimer from '../../hooks/useTimer';
 import BackgroundMusic from '../../components/BackgroundMusic';
 
+interface IGameProps {
+  onSubmitScores : (score : number) => void
+  levels: number,
+  stages : number
+}
 
-const Game: React.FC = () => {
+const Game: React.FC<IGameProps> = (props : IGameProps) => {
   const navigate = useNavigate()
   const { updateScoreToServer } = useMain()
   const { time, start: startTimer, stop: stopTimer, reset: resetTimer } = useTimer();
+  const {levels, stages, onSubmitScores} = props;
 
   const [finalScore, setFinalScore] = useState<number>(0);
   const [gameFinished, setGameFinished] = useState<boolean>(false);
-  const [level] = useState<number>(2);
-  const [stages] = useState<number>(4);
-  const [game, resetGame] = useState(new ColorSpotGame(level, stages));
+  // const [level] = useState<number>(4);
+  // const [stages] = useState<number>(4);
+  const [game, resetGame] = useState(new ColorSpotGame(levels, stages));
 
   const [dots, setDots] = useState<string[]>([]);
   const [correctDot, setCorrectDot] = useState<number>(0);
@@ -56,8 +62,9 @@ const Game: React.FC = () => {
       updateScoreToServer(score);
       setGameFinished(true);
       stopTimer();
+      onSubmitScores(score);
     }
-  }, [game, time, setGameOver, updateScoreToServer, setGameFinished, stopTimer]);
+  }, [game, time, setGameOver, updateScoreToServer, setGameFinished, stopTimer, onSubmitScores]);
 
   const handleDotClick = useCallback((index: number) => {
     // console.log('dot, idx: ', dots, idx)
@@ -70,11 +77,12 @@ const Game: React.FC = () => {
       setFinalScore(score);
       updateScoreToServer(score);
       stopTimer();
+      onSubmitScores(score);
     }
   }, [handleNextStage, dots, time, , setGameOver, updateScoreToServer, stopTimer]);
 
   const restartGame = useCallback(() => {
-    const newGame = new ColorSpotGame(level, stages);
+    const newGame = new ColorSpotGame(levels, stages);
     const { dots: newDotList, resultIdx: newResultIdx } = newGame.getGameNextLevel();
     setDots(newDotList);
     setCorrectDot(newResultIdx)
@@ -83,17 +91,17 @@ const Game: React.FC = () => {
     setGameFinished(false);
     resetTimer();
     startTimer();
-  }, [resetGame, setDots, setCorrectDot, setGameOver, setGameFinished, startTimer, resetTimer, level, stages])
+  }, [resetGame, setDots, setCorrectDot, setGameOver, setGameFinished, startTimer, resetTimer, levels, stages])
 
   useEffect(() => {
     restartGame();
   }, [])
 
   return (
-    <div style={{ textAlign: 'center', marginTop: '50px' }}>
+    <div style={{ textAlign: 'center' }}>
       <Timer time={time} />
       <BackgroundMusic songUrl={bgSong} />
-      <h1>Color Spot Game Level {currentLevel}</h1>
+      <h1>Level {currentLevel}</h1>
       {gameOver || gameFinished ? (
         <div>
           <h2>{gameFinished ? 'Congratulation You have Completed All Levels' : `Game Over! You reached only stage ${currentStage} of level ${currentLevel}`}</h2>
