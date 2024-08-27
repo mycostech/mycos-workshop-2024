@@ -8,11 +8,12 @@ import ColorSpotGame from './core/ColorSpotGame';
 import Timer from '../../components/Timer';
 import useTimer from '../../hooks/useTimer';
 import BackgroundMusic from '../../components/BackgroundMusic';
+import { submitScore } from '../../api/appScore'
 
 
 const Game: React.FC = () => {
   const navigate = useNavigate()
-  const { updateScoreToServer } = useMain()
+  const { channel, user } = useMain()
   const { time, start: startTimer, stop: stopTimer, reset: resetTimer } = useTimer();
 
   const [finalScore, setFinalScore] = useState<number>(0);
@@ -43,7 +44,7 @@ const Game: React.FC = () => {
   }, [gameOver, gameFinished])
 
 
-  const handleNextStage = useCallback(() => {
+  const handleNextStage = useCallback(async() => {
     if (game.nextStage()) {
       const { dots: newDotList, resultIdx: newResultIdx } = game.getGameNextLevel();
       setDots(newDotList);
@@ -53,13 +54,22 @@ const Game: React.FC = () => {
       // Submit calculated score.
       const score = game.getScore(Math.floor((time % 60000) / 1000));
       setFinalScore(score);
-      updateScoreToServer(score);
       setGameFinished(true);
       stopTimer();
+      try {
+        await submitScore({
+          appName: channel!,
+          userName: user!,
+          score
+        })
+      } catch (error) {
+        console.error(error)
+        alert("Error to submit score to server.")
+      }
     }
-  }, [game, time, setGameOver, updateScoreToServer, setGameFinished, stopTimer]);
+  }, [game, time, setGameOver, setGameFinished, stopTimer]);
 
-  const handleDotClick = useCallback((index: number) => {
+  const handleDotClick = useCallback(async(index: number) => {
     // console.log('dot, idx: ', dots, idx)
     if (dots[index] === dots[correctDot]) {
       handleNextStage();
@@ -68,10 +78,19 @@ const Game: React.FC = () => {
       // Submit calculated score.
       const score = game.getScore(Math.floor((time % 60000) / 1000));
       setFinalScore(score);
-      updateScoreToServer(score);
       stopTimer();
+      try {
+        await submitScore({
+          appName: channel!,
+          userName: user!,
+          score
+        })
+      } catch (error) {
+        console.error(error)
+        alert("Error to submit score to server.")
+      }
     }
-  }, [handleNextStage, dots, time, , setGameOver, updateScoreToServer, stopTimer]);
+  }, [handleNextStage, dots, time, setGameOver, stopTimer, correctDot]);
 
   const restartGame = useCallback(() => {
     const newGame = new ColorSpotGame(level, stages);
