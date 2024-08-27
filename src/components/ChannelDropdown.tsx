@@ -1,5 +1,6 @@
 import { FormControl, InputLabel, MenuItem, Select } from "@mui/material"
 
+export const FIRST_OPTION_VALUE_DROPDOWN = "0000-0000-0000-0000"
 
 export default function ChannelDropdown({
     appNameLists,
@@ -18,6 +19,7 @@ export default function ChannelDropdown({
                 label="Channel"
                 onChange={e => onChange(e.target.value)}
             >
+                <MenuItem value={FIRST_OPTION_VALUE_DROPDOWN}>Select...</MenuItem>
                 {
                     appNameLists.map((m: string, i: number) => {
                         return <MenuItem key={i+1} value={m}>{m}</MenuItem>
