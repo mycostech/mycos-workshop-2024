@@ -8,6 +8,7 @@ import ColorSpotGame from './core/ColorSpotGame';
 import Timer from '../../components/Timer';
 import useTimer from '../../hooks/useTimer';
 import BackgroundMusic from '../../components/BackgroundMusic';
+import { submitScore } from '../../api/appScore'
 
 interface IGameProps {
   onSubmitScores : (score : number) => void
@@ -17,14 +18,12 @@ interface IGameProps {
 
 const Game: React.FC<IGameProps> = (props : IGameProps) => {
   const navigate = useNavigate()
-  const { updateScoreToServer } = useMain()
+  const { channel, user } = useMain()
   const { time, start: startTimer, stop: stopTimer, reset: resetTimer } = useTimer();
   const {levels, stages, onSubmitScores} = props;
 
   const [finalScore, setFinalScore] = useState<number>(0);
   const [gameFinished, setGameFinished] = useState<boolean>(false);
-  // const [level] = useState<number>(4);
-  // const [stages] = useState<number>(4);
   const [game, resetGame] = useState(new ColorSpotGame(levels, stages));
 
   const [dots, setDots] = useState<string[]>([]);
@@ -48,8 +47,20 @@ const Game: React.FC<IGameProps> = (props : IGameProps) => {
     return 'https://www.youtube.com/watch?v=BS5Q6cZMIM8';
   }, [gameOver, gameFinished])
 
+  const submitScoreToServer = useCallback(async (score:number) => {
+    try {
+      await submitScore({
+        appName: channel!,
+        userName: user!,
+        score
+      })
+    } catch (error) {
+      console.error(error)
+      alert("Error to submit score to server.")
+    }
+  },[user, channel])
 
-  const handleNextStage = useCallback(() => {
+  const handleNextStage = useCallback(async() => {
     if (game.nextStage()) {
       const { dots: newDotList, resultIdx: newResultIdx } = game.getGameNextLevel();
       setDots(newDotList);
@@ -59,14 +70,13 @@ const Game: React.FC<IGameProps> = (props : IGameProps) => {
       // Submit calculated score.
       const score = game.getScore(Math.floor((time % 60000) / 1000));
       setFinalScore(score);
-      updateScoreToServer(score);
       setGameFinished(true);
       stopTimer();
       onSubmitScores(score);
     }
-  }, [game, time, setGameOver, updateScoreToServer, setGameFinished, stopTimer, onSubmitScores]);
+  }, [game, time, setGameOver, submitScoreToServer, setGameFinished, stopTimer, onSubmitScores]);
 
-  const handleDotClick = useCallback((index: number) => {
+  const handleDotClick = useCallback(async(index: number) => {
     // console.log('dot, idx: ', dots, idx)
     if (dots[index] === dots[correctDot]) {
       handleNextStage();
@@ -75,11 +85,11 @@ const Game: React.FC<IGameProps> = (props : IGameProps) => {
       // Submit calculated score.
       const score = game.getScore(Math.floor((time % 60000) / 1000));
       setFinalScore(score);
-      updateScoreToServer(score);
       stopTimer();
       onSubmitScores(score);
+      submitScoreToServer(score)
     }
-  }, [handleNextStage, dots, time, , setGameOver, updateScoreToServer, stopTimer]);
+  }, [handleNextStage, dots, time, setGameOver, stopTimer, correctDot, submitScoreToServer]);
 
   const restartGame = useCallback(() => {
     const newGame = new ColorSpotGame(levels, stages);
