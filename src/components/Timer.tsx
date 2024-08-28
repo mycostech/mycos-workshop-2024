@@ -1,5 +1,5 @@
 import { CircularProgress } from "@mui/material";
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 
 const Timer: React.FC<{time: number}> = ({ time }) => {
     const progress = useMemo(() => {
@@ -14,10 +14,6 @@ const Timer: React.FC<{time: number}> = ({ time }) => {
 
         return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}:${String(milliseconds).padStart(3, '0')}`;
     };
-
-    useEffect(() => {
-        console.log(progress)
-    }, [progress])
 
     return (
         <div style={{ textAlign: 'center', margin: '20px' }}>
