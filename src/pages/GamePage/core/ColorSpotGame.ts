@@ -12,35 +12,29 @@ class ColorSpotGame {
     }
 
     getGameNextLevel(): { dots: string[], resultIdx: number } {
-        const level = this.currentLevel;
-        const baseColor = this.getRandomColor(); // Generate a random base color for the level
-        const hsl = this.hexToHSL(baseColor); // Convert base color to HSL
-        const gridSize = this.calculateGridSize(level);
-        console.log(gridSize);
+        // Generate a random base color for the level
+
+        // Convert base color to HSL
+
+        //Create Grid Size
 
         // Adjust lightness only, keeping hue and saturation consistent
-        let lightnessDifference
-        if (level < 5) {
-            lightnessDifference = Math.random() > 0.5 ? 10 : -10; // Randomly make the different color lighter or darker
 
-        } else if (level < 10) {
-            lightnessDifference = Math.random() > 0.5 ? 7 : -7
-        } else if (level < 15) {
-            lightnessDifference = Math.random() > 0.5 ? 4 : -4
-        } else {
-            lightnessDifference = Math.random() > 0.5 ? 2 : -2
-        }
-        const diffColor = this.HSLToHex(hsl.h, hsl.s, Math.min(100, hsl.l + lightnessDifference)); // Ensure lightness stays within bounds
+        // Randomly make the different color lighter or darker
 
-        const dots = Array(gridSize).fill(baseColor); // Generate an array of base color dots
-        const randomIndex = Math.floor(Math.random() * dots.length);
-        dots[randomIndex] = diffColor.toUpperCase(); // Replace one dot with the different color
+       // Ensure lightness stays within bounds
+
+       // Generate an array of base color dots
+
+       //Create random index (defferent color index)
+
+        // Replace one dot with the different color
 
         return {
-            dots,
-            resultIdx: randomIndex
+           dots: [],
+           resultIdx: 0
         };
-    };
+    }
 
     nextStage() {
         console.log(`Level ${this.currentLevel} - Stage : ${this.currentStage} of : ${this.stagesPerLevel}`)
@@ -99,7 +93,7 @@ class ColorSpotGame {
         }
 
         return { h: h * 360, s: s * 100, l: l * 100 };
-    };
+    }
 
     private HSLToHex(h: number, s: number, l: number): string {
         // Normalize the input values
@@ -153,7 +147,7 @@ class ColorSpotGame {
 
         const toHex = (value: number) => value.toString(16).padStart(2, '0');
         return `#${toHex(r)}${toHex(g)}${toHex(b)}`;
-    };
+    }
 
     // Function to generate a random color
     private getRandomColor(): string {
@@ -163,7 +157,7 @@ class ColorSpotGame {
             color += letters[Math.floor(Math.random() * 16)];
         }
         return color;
-    };
+    }
 
     private calculateGridSize(level: number): number {
         // The grid size is the square root of the number of elements.
