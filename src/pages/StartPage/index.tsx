@@ -1,47 +1,37 @@
-import { Box, Button, FormControl, Grid, TextField, Typography } from "@mui/material"
-import { useEffect, useState } from "react"
+import { Box, FormControl, Grid, Typography } from "@mui/material"
+import { useEffect } from "react"
 import { useMain } from "../../contexts/MainContext"
-import { useNavigate } from 'react-router-dom'
-import ChannelDropdown, { FIRST_OPTION_VALUE_DROPDOWN } from "../../components/ChannelDropdown"
-import { getAllListChannel } from '../../api/appScore'
 import Logo from '../../assets/full-logo.png';
 
 const StartPage = () => {
-    const { setUser, setChannel, joinGame, appList } = useMain()
-    const navigate = useNavigate()
-    const [name, setName] = useState<string>("John Doe")
-    const [channelName, setChannelName] = useState<string>(FIRST_OPTION_VALUE_DROPDOWN)
-    const [appNameLists, setAppNameLists] = useState<string[]>([])
+    const { } = useMain()
 
-    const [newChannelName, setNewChannelName] = useState<string>("")
+    // Create state for contain name that user type
+
+    // Create state for contain channel that user select (string)
+
+    // Create state for contain channel list (string[])
+
+    // Create state for contain new chanel that user type in textfield (string)
+
 
     useEffect(() => {
-        async function GetAllListChannel() {
-            try {
-                const data = await getAllListChannel()
-                setAppNameLists(() => [...data])
-            } catch (error) {
-                console.error(error)
-                alert("Error")
-            }
-        }
-
-        GetAllListChannel()
+        // When page is rendered.
+        // Call getAllListChannel() for get all channel list.
+        // And save those to state
     }, [])
 
-    useEffect(() => {
-        setAppNameLists([...appList])
-    }, [appList])
 
     const onStartBtnClick = () => {
-        if (channelName && channelName !== FIRST_OPTION_VALUE_DROPDOWN) {
-            setUser(name)
-            joinGame(channelName)
-            setChannel(channelName)
-            navigate('/game', { state: {} })
-        } else {
-            alert("Please select channel.")
-        }
+        // Logic for when user click on start button
+        // if channel name is not null and is not "Select..."
+        // set name to User state (from global state [context])
+        // Call joinGame(channelName) for join channel game
+        // set channel name  to Channel state (from global state [context])
+        // finally, navigate to game page
+
+        // if channel name is null or is "Select..."
+        // Alert warning message.
     }
 
     return (
@@ -56,54 +46,23 @@ const StartPage = () => {
                     <Typography variant="h2" p={1}>
                         Select Channel
                     </Typography>
-                    <ChannelDropdown
-                        appNameLists={appNameLists}
-                        channelName={channelName}
-                        onChange={(val) => setChannelName(val)}
-                    />
+                    {/* Create dropdown for show channel list */}
                     <FormControl fullWidth sx={{ mt: 1 }}>
-                        <TextField
-                            label="Create new channel"
-                            onChange={e => setNewChannelName(e.target.value)}
-                        />
+                        {/* Create textfield for input channel name that need to create new. */}
                     </FormControl>
                     <Grid item xs={12} sm={6}>
-                        <Button
-                            variant="outlined" sx={{ marginTop: 1 }}
-                            onClick={() => {
-                                if (newChannelName.trim() !== "") {
-                                    setAppNameLists(p => {
-                                        if (p.includes(newChannelName)) return p
-                                        return [newChannelName, ...p]
-                                    })
-                                    setChannelName(newChannelName)
-                                } else {
-                                    alert("Please input channel name")
-                                }
-                            }}
-                            fullWidth
-                        >
-                            Create new channel
-                        </Button>
+                        {/* Create button for create new channel */}
                     </Grid>
 
                 </Grid>
                 <Grid item xl={12} lg={12} md={12} sm={12} xs={12} p={2}>
                     <FormControl fullWidth sx={{ mt: 1 }}>
-                        <TextField
-                            required
-                            label="Input Name"
-                            value={name}
-                            onChange={e => setName(e.target.value)}
-                            fullWidth
-                        />
+                        {/* Create textfield for inpurt player name */}
                     </FormControl>
                 </Grid>
                 <Grid container item xs={12} pt={1} p={2} justifyContent="center">
                     <Grid item xs={12} sm={6}>
-                        <Button variant="contained" onClick={onStartBtnClick} fullWidth>
-                            Play
-                        </Button>
+                       {/* Create button for play game */}
                     </Grid>
 
                 </Grid>

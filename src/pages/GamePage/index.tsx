@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom"
 import { toast } from 'react-toastify';
 import VideogameAssetIcon from '@mui/icons-material/VideogameAsset';
 import SearchIcon from '@mui/icons-material/Search';
-import Game from "./GameLogic"
 import GamLogo from '../../assets/game-logo.png';
 
 const FlashingText = ({ begin, second, third, last, text } : {begin : string, second: string, third:string, last : string, text : string}) => {
@@ -131,11 +130,7 @@ const GamePage = () => {
                             padding: '24px'
                         }}
                     >
-                        <Game levels={levels} stages={stages} onSubmitScores={(score) => {
-                            if (score > highestScore) {
-                                setHighestScore(score);
-                            }
-                        }} />
+                        {/* Render Game component */}
                     </Box>
 
                     {/* Footer */}

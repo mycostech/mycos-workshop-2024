@@ -1,45 +1,31 @@
-import { useEffect, useState } from "react"
-import { Box, Button, Grid, Typography } from "@mui/material"
-import DataTable from "./Table"
+import { useEffect } from "react"
+import { Box, Grid, Typography } from "@mui/material"
 import { useNavigate } from "react-router-dom"
-import ChannelDropdown, { FIRST_OPTION_VALUE_DROPDOWN } from "../../components/ChannelDropdown"
-import { getAllListChannel, getScoreByAppName } from "../../api/appScore"
+import { useMain } from "../../contexts/MainContext"
 
 interface IScoreList{[key: string]: number}
 
 export default function ScorePage(){
     const navigate = useNavigate()
-    // const { channel } = useMain()
-    const [appNameLists, setAppNameLists] = useState<string[]>([])
-    const [channelId, setChannelId] = useState<string | null>(FIRST_OPTION_VALUE_DROPDOWN)
-    const [scoreList, setScoreList] = useState<IScoreList>({})
+    
+    const { } = useMain()
+    // Create state for contain list of channels (string[])
+    // Create state for contain channel choice selected (string)
+    
+    // Create state for contain score (type: IScoreList)
 
     useEffect(() => {
-        async function GetAllListChannel() {
-            try {
-                const data = await getAllListChannel()
-                setAppNameLists(() => [...data])
-            } catch (error) {
-                console.error(error)
-                alert("Error")
-            }
-        }
-
-        GetAllListChannel()
+        /*
+            When render this page
+            call getAllListChannel() function to get all channel list.
+            And set to state.
+        */
+       
     }, [])
 
     const onSelectChannel = async(channelIdSelected: string) => {
-        if(channelIdSelected !== FIRST_OPTION_VALUE_DROPDOWN){
-        setChannelId(channelIdSelected)
-        // getLatestScoreFromServer(channelIdSelected)
-        try {
-            const res = await getScoreByAppName(channelIdSelected)
-            setScoreList(res)
-        } catch (error) {
-            console.error(error)
-            alert(`Can't get score from server.`)
-        }
-       }
+        // Function for get score by channel
+        // and render score in table
     }
 
     return(
@@ -51,26 +37,15 @@ export default function ScorePage(){
                     </Typography>   
                 </Grid>
                 <Grid item xl={12} lg={12} md={12} sm={12} xs={12} p={1}>
-                    <ChannelDropdown
-                        appNameLists={appNameLists}
-                        channelName={channelId || ""}
-                        onChange={(val) => onSelectChannel(val)}
-                    />
+                   {/* 
+                    Render channel dropdown 
+                   */}
                 </Grid>
                 <Grid item xl={12} lg={12} md={12} sm={12} xs={12}>
-                    <DataTable
-                        data={scoreList}
-                    />
+                    {/* Render data table for show score */}
                 </Grid>
                 <Grid item xl={12} lg={12} md={12} sm={12} xs={12} p={1}>
-                    <Button
-                        variant="contained"
-                        onClick={() => {
-                            navigate('/')
-                        }}
-                    >
-                        Back to Home
-                    </Button>
+                    {/* Render button for back to home */}
                 </Grid>
             </Grid>
         </Box>

@@ -37,13 +37,15 @@ class ColorSpotGame {
     }
 
     nextStage() {
-        console.log(`Level ${this.currentLevel} - Stage : ${this.currentStage} of : ${this.stagesPerLevel}`)
-        if (this.currentStage < this.stagesPerLevel) {
-            this.currentStage++;
+    /*
+        //Check condition for go to next stage    
+        if (condition) {
+            // if stage less than level
+            
         } else {
-            return this.nextLevel();
+            // if stage more than level   
         }
-        return true;
+    */
     }
 
     // Time will calculate in second
@@ -52,21 +54,52 @@ class ColorSpotGame {
         const LEVEL_WEIGHT = 50; // Weight for each level
         const STAGE_WEIGHT = 20; // Weight for each stage
         const TIME_WEIGHT = 1; // Decrease score depends on time counter
+        // Logic for calculate score
         const score = BASE_SCORE
             + (this.currentLevel * LEVEL_WEIGHT)
             + (this.currentStage * STAGE_WEIGHT)
             - (time * TIME_WEIGHT);
 
-        // Round the score to the nearest integer and ensure it is not negative
-        return this.currentLevel === 1 && this.currentStage ===1 ? 0 : Math.max(Math.round(score), 0);
+        /*
+        if(condition){
+            //case: when current level = 1 and curent stage = 1 (Game over in lv.1 stage 1)
+            // return score = 0
+        }else{
+            // Round the score to the nearest integer and ensure it is not negative
+            // return rounding score.
+        }
+        */
+        return 0
     }
 
     getCurrentLevel() {
-        return this.currentLevel;
+        // return current level
+        return 1
     }
 
     getCurrentStage() {
-        return this.currentStage;
+        // current stage
+        return 1
+    }
+
+    private nextLevel() {
+    /*
+        if (this.currentLevel < this.levels) {
+            //Case: Go to next stage.
+            //if current level less than level.
+            // increment current level
+
+            // Reset stage to 1 when moving to the next level
+
+            // return true
+
+        } else {
+            // if current level more than level
+            // That means complete all level.
+            // return false
+        }
+    */
+        return true
     }
 
 
@@ -164,17 +197,6 @@ class ColorSpotGame {
         // Break down the difficulty related to the max level of the game
         level = level + 1;
         return level * level;
-    }
-
-    private nextLevel() {
-        if (this.currentLevel < this.levels) {
-            this.currentLevel++;
-            this.currentStage = 1; // Reset stage to 1 when moving to the next level
-            return true;
-        } else {
-            console.log('You have completed all levels!');
-            return false;
-        }
     }
 }
 
