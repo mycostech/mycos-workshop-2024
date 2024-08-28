@@ -35,7 +35,7 @@ const GamePage = () => {
     const { user, channel, scoreList, connectionCount } = useMain();
 
     const [highestScore, setHighestScore] = useState<number>(0);
-    const levels = 4;
+    const levels = 20;
     const stages = 4;
 
     useEffect(() => {
