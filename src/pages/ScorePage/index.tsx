@@ -4,12 +4,13 @@ import DataTable from "./Table"
 import { useNavigate } from "react-router-dom"
 import ChannelDropdown, { FIRST_OPTION_VALUE_DROPDOWN } from "../../components/ChannelDropdown"
 import { getAllListChannel, getScoreByAppName } from "../../api/appScore"
+import { useMain } from "../../contexts/MainContext"
 
 interface IScoreList{[key: string]: number}
 
 export default function ScorePage(){
     const navigate = useNavigate()
-    // const { channel } = useMain()
+    const { joinGame, scoreList: wsScoreList } = useMain()
     const [appNameLists, setAppNameLists] = useState<string[]>([])
     const [channelId, setChannelId] = useState<string | null>(FIRST_OPTION_VALUE_DROPDOWN)
     const [scoreList, setScoreList] = useState<IScoreList>({})
@@ -28,6 +29,11 @@ export default function ScorePage(){
         GetAllListChannel()
     }, [])
 
+    useEffect(() => {
+        console.log('scorelist : ', wsScoreList)
+        setScoreList(wsScoreList)
+    }, [wsScoreList])
+
     const onSelectChannel = async(channelIdSelected: string) => {
         if(channelIdSelected !== FIRST_OPTION_VALUE_DROPDOWN){
         setChannelId(channelIdSelected)
@@ -35,6 +41,7 @@ export default function ScorePage(){
         try {
             const res = await getScoreByAppName(channelIdSelected)
             setScoreList(res)
+            joinGame(channelIdSelected)
         } catch (error) {
             console.error(error)
             alert(`Can't get score from server.`)
@@ -48,7 +55,7 @@ export default function ScorePage(){
                 <Grid item xl={12} lg={12} md={12} sm={12} xs={12}>
                     <Typography variant="h1">
                         Scoreboard
-                    </Typography>   
+                    </Typography>
                 </Grid>
                 <Grid item xl={12} lg={12} md={12} sm={12} xs={12} p={1}>
                     <ChannelDropdown
