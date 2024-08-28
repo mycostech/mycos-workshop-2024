@@ -9,18 +9,23 @@ import Timer from '../../components/Timer';
 import useTimer from '../../hooks/useTimer';
 import BackgroundMusic from '../../components/BackgroundMusic';
 import { submitScore } from '../../api/appScore'
+import { toast } from 'react-toastify';
 
+interface IGameProps {
+  onSubmitScores : (score : number) => void
+  levels: number,
+  stages : number
+}
 
-const Game: React.FC = () => {
+const Game: React.FC<IGameProps> = (props : IGameProps) => {
   const navigate = useNavigate()
   const { channel, user } = useMain()
   const { time, start: startTimer, stop: stopTimer, reset: resetTimer } = useTimer();
+  const {levels, stages, onSubmitScores} = props;
 
   const [finalScore, setFinalScore] = useState<number>(0);
   const [gameFinished, setGameFinished] = useState<boolean>(false);
-  const [level] = useState<number>(2);
-  const [stages] = useState<number>(4);
-  const [game, resetGame] = useState(new ColorSpotGame(level, stages));
+  const [game, resetGame] = useState(new ColorSpotGame(levels, stages));
 
   const [dots, setDots] = useState<string[]>([]);
   const [correctDot, setCorrectDot] = useState<number>(0);
@@ -43,6 +48,18 @@ const Game: React.FC = () => {
     return 'https://www.youtube.com/watch?v=BS5Q6cZMIM8';
   }, [gameOver, gameFinished])
 
+  const submitScoreToServer = useCallback(async (score:number) => {
+    try {
+      await submitScore({
+        appName: channel!,
+        userName: user!,
+        score
+      })
+    } catch (error) {
+      console.error(error)
+      alert("Error to submit score to server.")
+    }
+  },[user, channel])
 
   const handleNextStage = useCallback(async() => {
     if (game.nextStage()) {
@@ -56,18 +73,9 @@ const Game: React.FC = () => {
       setFinalScore(score);
       setGameFinished(true);
       stopTimer();
-      try {
-        await submitScore({
-          appName: channel!,
-          userName: user!,
-          score
-        })
-      } catch (error) {
-        console.error(error)
-        alert("Error to submit score to server.")
-      }
+      onSubmitScores(score);
     }
-  }, [game, time, setGameOver, setGameFinished, stopTimer]);
+  }, [game, time, setGameOver, submitScoreToServer, setGameFinished, stopTimer, onSubmitScores]);
 
   const handleDotClick = useCallback(async(index: number) => {
     // console.log('dot, idx: ', dots, idx)
@@ -79,21 +87,13 @@ const Game: React.FC = () => {
       const score = game.getScore(Math.floor((time % 60000) / 1000));
       setFinalScore(score);
       stopTimer();
-      try {
-        await submitScore({
-          appName: channel!,
-          userName: user!,
-          score
-        })
-      } catch (error) {
-        console.error(error)
-        alert("Error to submit score to server.")
-      }
+      onSubmitScores(score);
+      submitScoreToServer(score)
     }
-  }, [handleNextStage, dots, time, setGameOver, stopTimer, correctDot]);
+  }, [handleNextStage, dots, time, setGameOver, stopTimer, correctDot, submitScoreToServer]);
 
   const restartGame = useCallback(() => {
-    const newGame = new ColorSpotGame(level, stages);
+    const newGame = new ColorSpotGame(levels, stages);
     const { dots: newDotList, resultIdx: newResultIdx } = newGame.getGameNextLevel();
     setDots(newDotList);
     setCorrectDot(newResultIdx)
@@ -102,17 +102,17 @@ const Game: React.FC = () => {
     setGameFinished(false);
     resetTimer();
     startTimer();
-  }, [resetGame, setDots, setCorrectDot, setGameOver, setGameFinished, startTimer, resetTimer, level, stages])
+  }, [resetGame, setDots, setCorrectDot, setGameOver, setGameFinished, startTimer, resetTimer, levels, stages])
 
   useEffect(() => {
     restartGame();
   }, [])
 
   return (
-    <div style={{ textAlign: 'center', marginTop: '50px' }}>
+    <div style={{ textAlign: 'center' }}>
       <Timer time={time} />
       <BackgroundMusic songUrl={bgSong} />
-      <h1>Color Spot Game Level {currentLevel}</h1>
+      <h1>Level {currentLevel}</h1>
       {gameOver || gameFinished ? (
         <div>
           <h2>{gameFinished ? 'Congratulation You have Completed All Levels' : `Game Over! You reached only stage ${currentStage} of level ${currentLevel}`}</h2>

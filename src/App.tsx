@@ -4,15 +4,21 @@ import MainPage from './pages'
 import { ThemeProvider } from '@mui/material/styles';
 import { MainProvider } from './contexts/MainContext'
 import theme from './theme';
+import { BrowserRouter } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
 
   return (
-    <MainProvider>
-      <ThemeProvider theme={theme}>
-        <MainPage/>
-      </ThemeProvider>
-    </MainProvider>
+    <BrowserRouter>
+      <MainProvider>
+        <ThemeProvider theme={theme}>
+          <MainPage />
+          <ToastContainer />
+        </ThemeProvider>
+      </MainProvider>
+    </BrowserRouter>
   )
 }
 
