@@ -2,12 +2,13 @@ import { Box, Grid, Typography, } from "@mui/material"
 import { useMain } from "../../contexts/MainContext"
 import { useEffect, useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { toast } from 'react-toastify';
 import VideogameAssetIcon from '@mui/icons-material/VideogameAsset';
 import SearchIcon from '@mui/icons-material/Search';
 import Game from "./GameLogic"
 import GamLogo from '../../assets/game-logo.png';
 
-const FlashingText = ({ begin, second, last, text } : {begin : string, second: string, last : string, text : string}) => {
+const FlashingText = ({ begin, second, third, last, text } : {begin : string, second: string, third:string, last : string, text : string}) => {
     return (
       <Box>
         <Typography
@@ -18,8 +19,8 @@ const FlashingText = ({ begin, second, last, text } : {begin : string, second: s
             '@keyframes flash': {
              '0%': { color: begin },  // Start with first color
             '33%': { color: second }, // Change to second color
-            '66%': { color: last },   // Change to third color
-            '100%': { color: begin }  // Back to the first color
+            '66%': { color: third },   // Change to third color
+            '100%': { color: last }  // Back to the first color
             }
           }}
         >
@@ -28,18 +29,29 @@ const FlashingText = ({ begin, second, last, text } : {begin : string, second: s
       </Box>
     );
   };
+
 const GamePage = () => {
     const navigate = useNavigate()
-    const { user, channel } = useMain();
+    const { user, channel, scoreList, connectionCount } = useMain();
 
     const [highestScore, setHighestScore] = useState<number>(0);
-    const [totalPalyers, setPlayers] = useState<number>(0);
     const levels = 4;
     const stages = 4;
 
     useEffect(() => {
         if (!user) navigate('/')
     }, [user, navigate])
+
+    useEffect(() => {
+        if(scoreList) {
+            // toast('update score' + `${scoreList}`);
+            const scores = Object.values(scoreList);
+            const maxValue = Math.max(...scores);
+            if(maxValue > highestScore) {
+                toast(`The highest score is now ${maxValue}`);
+            }
+        }
+    },[scoreList, highestScore])
 
     return (
         <Box>
@@ -62,13 +74,10 @@ const GamePage = () => {
                         <Box sx={{
                             display: 'flex'
                         }}>
-                            <FlashingText begin="#D81E5B" second="#1876d2" last="#FFC300" text="H" />
-                            <FlashingText begin="#1876d2" second="#FFC300" last="#D81E5B" text="U" />
-                            <FlashingText begin="#FFC300" second="#D81E5B" last="#1876d2" text="E" />
+                            <FlashingText begin="#D81E5B" second="#1876d2" third="#53b5a0" last="#FFC300" text="HUE" />
                         </Box>
 
                         <Typography sx={{ fontSize: 32 }} fontWeight={'bold'} color={'#00B140'}>Hunter</Typography>
-                        {/* <Typography sx={{ fontSize: 32 }} fontWeight={'bold'} color={'#FFC300'}>Game</Typography> */}
                         <SearchIcon color="secondary" sx={{ fontSize: 40, color: '#FFC300' }} />
                     </Box>
                 </Grid>
@@ -95,7 +104,7 @@ const GamePage = () => {
                         <Typography sx={{ color: '#fff', fontSize: 14 }}>Channel : {channel}</Typography>
                     </Box>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography sx={{ color: '#fff', fontSize: 14 }}>Active Payers : {0}</Typography>
+                        <Typography sx={{ color: '#fff', fontSize: 14 }}>Active Payers : {connectionCount}</Typography>
                     </Box>
                     {/* <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
                         <Box sx={{ minWidth: 35 }}>
@@ -112,7 +121,7 @@ const GamePage = () => {
                     </Box> */}
 
 
-                    {/* Tetris Grid Placeholder */}
+                    {/* Game content */}
                     <Box
                         sx={{
                             flexGrow: 1,

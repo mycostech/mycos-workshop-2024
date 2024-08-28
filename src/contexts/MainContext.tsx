@@ -14,6 +14,7 @@ interface MainContextType {
   connection: signalR.HubConnection | null
   isConnect: boolean
   appList: string[]
+  connectionCount : number
 }
 
 // Create the context with a default value
@@ -29,7 +30,8 @@ export const MainProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     scoreList,
     connection,
     isConnect,
-    appList
+    appList,
+    connectionCount
   } = useSignalR(wsUrl)
 
   return (
@@ -42,7 +44,8 @@ export const MainProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       scoreList,
       connection,
       isConnect,
-      appList
+      appList,
+      connectionCount
     }}>
       {children}
     </MainContext.Provider>

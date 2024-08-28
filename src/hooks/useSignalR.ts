@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import * as signalR from "@microsoft/signalr";
 
-export interface IScoreList{[key: string]: number}
+export interface IScoreList { [key: string]: number }
 
 const useSignalR = (hubUrl: string) => {
     const [connection, setConnection] = useState<signalR.HubConnection | null>(null);
@@ -9,6 +9,7 @@ const useSignalR = (hubUrl: string) => {
     const [scoreList, setScoreList] = useState<IScoreList>({})
     const [appList, setAppList] = useState<string[]>([])
     const [isConnect, setIsConnect] = useState<boolean>(false)
+    const [connectionCount, setConnectionCount] = useState<number>(0)
 
     useEffect(() => {
         const connect = new signalR.HubConnectionBuilder()
@@ -34,12 +35,18 @@ const useSignalR = (hubUrl: string) => {
                     setIsConnect(true)
 
                     connection.on("ReceiveScores", (scores) => {
+                        console.log('ReceiveScores', scores)
                         setScoreList(scores)
                     });
 
                     connection.on("ReceiveAppNames", (appNames) => {
                         setAppList(appNames)
                     })
+
+                    connection.on("UpdateConnectionCount", (connectionCount) => {
+                        setConnectionCount(connectionCount)
+                    })
+
                 })
                 .catch((err) => {
                     console.error("SignalR Connection Error: ", err)
@@ -50,8 +57,8 @@ const useSignalR = (hubUrl: string) => {
 
     const joinGame = useCallback((roomId: string) => {
         console.log("start to join game")
-        if(connection){
-            connection?.invoke("JoinApp", roomId).then(() => {
+        if (connection) {
+            connection?.invoke("CreateApp", roomId).then(() => {
                 console.log("Joined Game")
             }).catch(err => console.error(err.toString()));
         }
@@ -63,7 +70,8 @@ const useSignalR = (hubUrl: string) => {
         joinGame,
         scoreList,
         isConnect,
-        appList
+        appList,
+        connectionCount
     };
 };
 

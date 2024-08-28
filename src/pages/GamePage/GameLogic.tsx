@@ -9,6 +9,7 @@ import Timer from '../../components/Timer';
 import useTimer from '../../hooks/useTimer';
 import BackgroundMusic from '../../components/BackgroundMusic';
 import { submitScore } from '../../api/appScore'
+import { toast } from 'react-toastify';
 
 interface IGameProps {
   onSubmitScores : (score : number) => void
