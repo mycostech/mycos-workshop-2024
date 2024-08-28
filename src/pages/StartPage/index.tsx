@@ -2,14 +2,12 @@ import { Box, Button, FormControl, Grid, TextField, Typography } from "@mui/mate
 import { useEffect, useState } from "react"
 import { useMain } from "../../contexts/MainContext"
 import { useNavigate } from 'react-router-dom'
-import ScoreboardButton from "../../components/ScoreboardButton"
 import ChannelDropdown, { FIRST_OPTION_VALUE_DROPDOWN } from "../../components/ChannelDropdown"
 import { getAllListChannel } from '../../api/appScore'
 import Logo from '../../assets/full-logo.png';
-import { toast } from "react-toastify"
 
 const StartPage = () => {
-    const { setUser, setChannel, joinGame, appList, scoreList } = useMain()
+    const { setUser, setChannel, joinGame, appList } = useMain()
     const navigate = useNavigate()
     const [name, setName] = useState<string>("John Doe")
     const [channelName, setChannelName] = useState<string>(FIRST_OPTION_VALUE_DROPDOWN)
