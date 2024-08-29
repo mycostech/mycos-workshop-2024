@@ -7,7 +7,7 @@ import ChannelDropdown, { FIRST_OPTION_VALUE_DROPDOWN } from "../../components/C
 import { getAllListChannel } from "../../api/appScore";
 
 const StartPage = () => {
-    const { setUser, setChannel, joinGame, appList } = useMain()
+    const { setUser, setChannel, joinGame } = useMain()
     const navigate = useNavigate()
     
     // TO DO: Create State.
