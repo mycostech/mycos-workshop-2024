@@ -26,13 +26,6 @@ export default function ScorePage(){
        
     }, [])
 
-    useEffect(() => {
-        //TO DO:
-        // Update realtime score from WS by set to score list state.
-        
-    }, [])
-
-
     const onSelectChannel = async(channelIdSelected: string) => {
         // TO DO:
         // Function for get score by channel
