@@ -14,31 +14,50 @@ class ColorSpotGame {
     getGameNextLevel(): { dots: string[], resultIdx: number } {
         // TO DO:
         // Generate a random base color for the level
+        const baseColor = this.getRandomColor();
 
         // Convert base color to HSL
+        const hsl = this.hexToHSL(baseColor);
 
         //Create Grid Size
+        const level = this.currentLevel;
+        const gridSize = this.calculateGridSize(level);
 
         // Adjust lightness only, keeping hue and saturation consistent
-
         // Randomly make the different color lighter or darker
+        let lightnessDifference
+        if (level < 5) {
+            lightnessDifference = Math.random() > 0.5 ? 10 : -10; // Randomly make the different color lighter or darker
 
-       // Ensure lightness stays within bounds
+        } else if (level < 10) {
+            lightnessDifference = Math.random() > 0.5 ? 7 : -7
+        } else if (level < 15) {
+            lightnessDifference = Math.random() > 0.5 ? 4 : -4
+        } else {
+            lightnessDifference = Math.random() > 0.5 ? 2 : -2
+        }
 
-       // Generate an array of base color dots
+        // Ensure lightness stays within bounds
+        const diffColor = this.HSLToHex(hsl.h, hsl.s, Math.min(100, hsl.l + lightnessDifference));
 
-       //Create random index (defferent color index)
+        // Generate an array of base color dots
+        const dots = Array(gridSize).fill(baseColor);
+
+        //Create random index (defferent color index)
+        const randomIndex = Math.floor(Math.random() * dots.length);
 
         // Replace one dot with the different color
+        dots[randomIndex] = diffColor.toUpperCase();
 
         return {
-           dots: [],
-           resultIdx: 0
+           dots: dots,
+           resultIdx: randomIndex
         };
     }
 
     nextStage() {
         // TO DO:
+        console.log(`Level ${this.currentLevel} - Stage : ${this.currentStage} of : ${this.stagesPerLevel}`)
         /*
         //Check condition for go to next stage    
         if (condition) {
@@ -47,7 +66,13 @@ class ColorSpotGame {
         } else {
             // if stage more than level   
         }
-    */
+        */
+        if (this.currentStage < this.stagesPerLevel) {
+            this.currentStage++;
+        } else {
+            return this.nextLevel();
+        }
+        return true;
     }
 
     // Time will calculate in second
@@ -72,19 +97,24 @@ class ColorSpotGame {
             // return rounding score.
         }
         */
-        return 0
+        if(this.currentLevel === 1 && this.currentStage ===1){
+            return 0
+        }else{
+            return Math.max(Math.round(score), 0)
+        }
+        
     }
 
     getCurrentLevel() {
         // TO DO:
         // return current level
-        return 1
+        return this.currentLevel;
     }
 
     getCurrentStage() {
         // TO DO:
         // current stage
-        return 1
+        return this.currentStage;
     }
 
     private nextLevel() {
@@ -105,6 +135,17 @@ class ColorSpotGame {
             // return false
         }
     */
+        if (this.currentLevel < this.levels) {
+            // increment current level
+            this.currentLevel++;
+
+            // Reset stage to 1 when moving to the next level
+            this.currentStage = 1; 
+            return true;
+        } else {
+            console.log('You have completed all levels!');
+            return false;
+        }
         return true
     }
 

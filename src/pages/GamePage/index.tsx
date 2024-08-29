@@ -1,9 +1,12 @@
 import { Box, Grid, Typography, } from "@mui/material"
 import { useMain } from "../../contexts/MainContext"
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import VideogameAssetIcon from '@mui/icons-material/VideogameAsset';
 import SearchIcon from '@mui/icons-material/Search';
 import GamLogo from '../../assets/game-logo.png';
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import Game from "./GameLogic";
 
 const FlashingText = ({ begin, second, third, last, text } : {begin : string, second: string, third:string, last : string, text : string}) => {
     return (
@@ -28,24 +31,39 @@ const FlashingText = ({ begin, second, third, last, text } : {begin : string, se
   };
 
 const GamePage = () => {
-    const {} = useMain();
+    const navigate = useNavigate()
+    const { user, channel, scoreList, connectionCount } = useMain();
+
     //  TO DO: Create new state
     // Create state for contain highest score (int)
+    const [highestScore, setHighestScore] = useState<number>(0);
+
     // Create constant for contain level
+    const levels = 20;
+
     // Create constant for contain stage
+    const stages = 4;
 
     useEffect(() => {
         // TO DO:
         //when render page
         // if user is null
         // redirect to home page.
-    }, [])
+        if (!user) navigate('/')
+    }, [user, navigate])
 
     useEffect(() => {
         // TO DO:
         // Show toast to notify a highest score (now) to user
-
-    },[])
+        if(scoreList) {
+            // toast('update score' + `${scoreList}`);
+            const scores = Object.values(scoreList);
+            const maxValue = Math.max(...scores);
+            if(maxValue > highestScore) {
+                toast(`The highest score is now ${maxValue}`);
+            }
+        }
+    },[scoreList, highestScore])
 
     return (
         <Box>
@@ -94,13 +112,22 @@ const GamePage = () => {
                 >
                     {/* Header */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        {/*TO DO: Show player name */}
+                        {
+                            /*TO DO: Show player name */
+                            <Typography sx={{ color: '#fff', fontSize: 14 }}>Player : {user}</Typography>
+                        }
                         
-                        {/*TO DO: Show channel name */}
+                        {
+                            /*TO DO: Show channel name */
+                            <Typography sx={{ color: '#fff', fontSize: 14 }}>Channel : {channel}</Typography>
+                        }
 
                     </Box>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        {/*TO DO: Show active player count */}
+                        {
+                            /*TO DO: Show active player count */
+                            <Typography sx={{ color: '#fff', fontSize: 14 }}>Active Payers : {connectionCount}</Typography>
+                        }
                     </Box>
 
                     {/* Game content */}
@@ -113,7 +140,14 @@ const GamePage = () => {
                             padding: '24px'
                         }}
                     >
-                        {/*TO DO: Render Game component */}
+                        {
+                            /*TO DO: Render Game component */
+                            <Game levels={levels} stages={stages} onSubmitScores={(score) => {
+                                if (score > highestScore) {
+                                    setHighestScore(score);
+                                }
+                            }} />
+                        }
                     </Box>
 
                     {/* Footer */}
@@ -126,12 +160,18 @@ const GamePage = () => {
                     >
                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             {/*TO DO: Show total level number */}
+                            <Typography sx={{ color: '#fff', fontSize: 12 }}>Total Levels</Typography>
+                            <Typography sx={{ color: '#fff', fontSize: 20, fontWeight: 'bold' }}>{levels}</Typography>
+
                         </Box>
                         <Box component="img" sx={{
                             height: 72
                         }} src={GamLogo}></Box>
                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                             {/*TO DO: Show highest score */}
+                            <Typography sx={{ color: '#fff', fontSize: 12 }}>Your Highest Score</Typography>
+                            <Typography sx={{ color: '#fff', fontSize: 20, fontWeight: 'bold' }}>{highestScore}</Typography>
+                            
                         </Box>
                     </Box>
                 </Box>
