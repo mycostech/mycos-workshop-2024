@@ -12,6 +12,7 @@ class ColorSpotGame {
     }
 
     getGameNextLevel(): { dots: string[], resultIdx: number } {
+        // TO DO:
         // Generate a random base color for the level
 
         // Convert base color to HSL
@@ -37,7 +38,8 @@ class ColorSpotGame {
     }
 
     nextStage() {
-    /*
+        // TO DO:
+        /*
         //Check condition for go to next stage    
         if (condition) {
             // if stage less than level
@@ -60,6 +62,7 @@ class ColorSpotGame {
             + (this.currentStage * STAGE_WEIGHT)
             - (time * TIME_WEIGHT);
 
+        // TO DO:
         /*
         if(condition){
             //case: when current level = 1 and curent stage = 1 (Game over in lv.1 stage 1)
@@ -73,16 +76,19 @@ class ColorSpotGame {
     }
 
     getCurrentLevel() {
+        // TO DO:
         // return current level
         return 1
     }
 
     getCurrentStage() {
+        // TO DO:
         // current stage
         return 1
     }
 
     private nextLevel() {
+    // TO DO:
     /*
         if (this.currentLevel < this.levels) {
             //Case: Go to next stage.

@@ -29,18 +29,20 @@ const FlashingText = ({ begin, second, third, last, text } : {begin : string, se
 
 const GamePage = () => {
     const {} = useMain();
-
+    //  TO DO: Create new state
     // Create state for contain highest score (int)
     // Create constant for contain level
     // Create constant for contain stage
 
     useEffect(() => {
+        // TO DO:
         //when render page
         // if user is null
         // redirect to home page.
     }, [])
 
     useEffect(() => {
+        // TO DO:
         // Show toast to notify a highest score (now) to user
 
     },[])
@@ -92,18 +94,17 @@ const GamePage = () => {
                 >
                     {/* Header */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        {/* Show player name */}
+                        {/*TO DO: Show player name */}
                         
-                        {/* Show channel name */}
+                        {/*TO DO: Show channel name */}
 
                     </Box>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        {/* Show active player count */}
+                        {/*TO DO: Show active player count */}
                     </Box>
 
                     {/* Game content */}
-                    
-                    \<Box
+                    <Box
                         sx={{
                             flexGrow: 1,
                             backgroundColor: '#fff',
@@ -112,7 +113,7 @@ const GamePage = () => {
                             padding: '24px'
                         }}
                     >
-                        {/* Render Game component */}
+                        {/*TO DO: Render Game component */}
                     </Box>
 
                     {/* Footer */}
@@ -124,13 +125,13 @@ const GamePage = () => {
                         }}
                     >
                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                            {/* Show total level number */}
+                            {/*TO DO: Show total level number */}
                         </Box>
                         <Box component="img" sx={{
                             height: 72
                         }} src={GamLogo}></Box>
                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                            {/* Show highest score */}
+                            {/*TO DO: Show highest score */}
                         </Box>
                     </Box>
                 </Box>

@@ -6,6 +6,7 @@ import Logo from '../../assets/full-logo.png';
 const StartPage = () => {
     const { } = useMain()
 
+    // TO DO: Create State.
     // Create state for contain name that user type
 
     // Create state for contain channel that user select (string)
@@ -16,6 +17,8 @@ const StartPage = () => {
 
 
     useEffect(() => {
+        // TO DO.
+
         // When page is rendered.
         // Call getAllListChannel() for get all channel list.
         // And save those to state
@@ -23,6 +26,8 @@ const StartPage = () => {
 
 
     const onStartBtnClick = () => {
+        // TO DO.
+
         // Logic for when user click on start button
         // if channel name is not null and is not "Select..."
         // set name to User state (from global state [context])
@@ -46,23 +51,24 @@ const StartPage = () => {
                     <Typography variant="h2" p={1}>
                         Select Channel
                     </Typography>
-                    {/* Create dropdown for show channel list */}
+                    
+                    {/*TO DO: Create dropdown for show channel list */}
                     <FormControl fullWidth sx={{ mt: 1 }}>
                         {/* Create textfield for input channel name that need to create new. */}
                     </FormControl>
                     <Grid item xs={12} sm={6}>
-                        {/* Create button for create new channel */}
+                        {/* TO DO: Create button for create new channel */}
                     </Grid>
 
                 </Grid>
                 <Grid item xl={12} lg={12} md={12} sm={12} xs={12} p={2}>
                     <FormControl fullWidth sx={{ mt: 1 }}>
-                        {/* Create textfield for inpurt player name */}
+                        {/* TO DO: Create textfield for inpurt player name */}
                     </FormControl>
                 </Grid>
                 <Grid container item xs={12} pt={1} p={2} justifyContent="center">
                     <Grid item xs={12} sm={6}>
-                       {/* Create button for play game */}
+                       {/* TO DO: Create button for play game */}
                     </Grid>
 
                 </Grid>
