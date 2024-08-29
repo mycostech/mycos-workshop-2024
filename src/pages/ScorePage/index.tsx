@@ -11,7 +11,7 @@ interface IScoreList{[key: string]: number}
 export default function ScorePage(){
     const navigate = useNavigate()
     
-    const { joinGame, scoreList: wsScoreList } = useMain()
+    const { joinGame } = useMain()
 
     // TO DO: Create new State
     // Create state for contain list of channels (string[])
@@ -42,13 +42,6 @@ export default function ScorePage(){
 
         GetAllListChannel()
     }, [])
-
-    useEffect(() => {
-        //TO DO:
-        // Update realtime score from WS by set to score list state.
-        setScoreList(wsScoreList)
-    }, [wsScoreList])
-
 
     const onSelectChannel = async(channelIdSelected: string) => {
         // TO DO:
