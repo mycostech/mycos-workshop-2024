@@ -1,8 +1,6 @@
 import { Box, Grid, Typography, } from "@mui/material"
 import { useMain } from "../../contexts/MainContext"
-import { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { toast } from 'react-toastify';
+import { useEffect } from "react"
 import VideogameAssetIcon from '@mui/icons-material/VideogameAsset';
 import SearchIcon from '@mui/icons-material/Search';
 import GamLogo from '../../assets/game-logo.png';
@@ -30,27 +28,22 @@ const FlashingText = ({ begin, second, third, last, text } : {begin : string, se
   };
 
 const GamePage = () => {
-    const navigate = useNavigate()
-    const { user, channel, scoreList, connectionCount } = useMain();
+    const {} = useMain();
 
-    const [highestScore, setHighestScore] = useState<number>(0);
-    const levels = 20;
-    const stages = 4;
-
-    useEffect(() => {
-        if (!user) navigate('/')
-    }, [user, navigate])
+    // Create state for contain highest score (int)
+    // Create constant for contain level
+    // Create constant for contain stage
 
     useEffect(() => {
-        if(scoreList) {
-            // toast('update score' + `${scoreList}`);
-            const scores = Object.values(scoreList);
-            const maxValue = Math.max(...scores);
-            if(maxValue > highestScore) {
-                toast(`The highest score is now ${maxValue}`);
-            }
-        }
-    },[scoreList, highestScore])
+        //when render page
+        // if user is null
+        // redirect to home page.
+    }, [])
+
+    useEffect(() => {
+        // Show toast to notify a highest score (now) to user
+
+    },[])
 
     return (
         <Box>
@@ -99,29 +92,18 @@ const GamePage = () => {
                 >
                     {/* Header */}
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography sx={{ color: '#fff', fontSize: 14 }}>Player : {user}</Typography>
-                        <Typography sx={{ color: '#fff', fontSize: 14 }}>Channel : {channel}</Typography>
+                        {/* Show player name */}
+                        
+                        {/* Show channel name */}
+
                     </Box>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                        <Typography sx={{ color: '#fff', fontSize: 14 }}>Active Payers : {connectionCount}</Typography>
+                        {/* Show active player count */}
                     </Box>
-                    {/* <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
-                        <Box sx={{ minWidth: 35 }}>
-                        <Typography sx={{ color: '#fff', fontSize: 14 }}>Timer</Typography>
-                        </Box>
-                        <Box sx={{ width: '100%', mr: 1 }}>
-                            <LinearProgress
-                                variant="determinate"
-                                value={50}
-                                sx={{ height: 12, borderRadius: 5, backgroundColor: '#C4C4C4' }}
-                            />
-                        </Box>
-
-                    </Box> */}
-
 
                     {/* Game content */}
-                    <Box
+                    
+                    \<Box
                         sx={{
                             flexGrow: 1,
                             backgroundColor: '#fff',
@@ -142,15 +124,13 @@ const GamePage = () => {
                         }}
                     >
                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                            <Typography sx={{ color: '#fff', fontSize: 12 }}>Total Levels</Typography>
-                            <Typography sx={{ color: '#fff', fontSize: 20, fontWeight: 'bold' }}>{levels}</Typography>
+                            {/* Show total level number */}
                         </Box>
                         <Box component="img" sx={{
                             height: 72
                         }} src={GamLogo}></Box>
                         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                            <Typography sx={{ color: '#fff', fontSize: 12 }}>Your Highest Score</Typography>
-                            <Typography sx={{ color: '#fff', fontSize: 20, fontWeight: 'bold' }}>{highestScore}</Typography>
+                            {/* Show highest score */}
                         </Box>
                     </Box>
                 </Box>
